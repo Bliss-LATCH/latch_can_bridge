@@ -9,8 +9,9 @@
 #include "latch_can_bridge/latch_can_bridge.hpp"
 
 LatchCanBridgeNode::LatchCanBridgeNode(const rclcpp::NodeOptions& options) : Node("latch_can_bridge", options) {
-    socket_ = socket(PF_CAN, SOCK_RAW, CAN_RAW);
-    if (socket_ < 0) {
+    // set the socket FD
+    socket_fd_ = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+    if (socket_fd_ < 0) {
         // TODO handle errors
     }
 
@@ -21,6 +22,15 @@ LatchCanBridgeNode::LatchCanBridgeNode(const rclcpp::NodeOptions& options) : Nod
 
     // Give the request the name of the desired can interface
     strcpy(interface_req_.ifr_name, can_config_["can_bridge"]["can_interface"].as<std::string>().c_str());
+    ioctl(socket_fd_, SIOCGIFINDEX, &interface_req_);  // system call to get the interface for can0
+
+    // bind the socket address to CAN interface
+    socket_addr_.can_family = AF_CAN;
+    socket_addr_.can_ifindex = interface_req_.ifr_ifindex;
+
+    if (bind(socket_fd_, (struct sockaddr*)&socket_addr_, sizeof(socket_addr_)) < 0) {
+        // TODO handle errors
+    }
 
     load_can_mappings();
 }
@@ -49,7 +59,7 @@ void LatchCanBridgeNode::load_can_mappings() {
 
 void LatchCanBridgeNode::can_listener_loop() {
     struct can_frame frame;
-    auto can_bytes = read(socket_, &frame, sizeof(struct can_frame));
+    auto can_bytes = read(socket_fd_, &frame, sizeof(struct can_frame));
 }
 
 int main(int argc, char* argv[]) {

@@ -24,7 +24,7 @@ private:
     std::string can_interface_;
 
     // the socket for the can interface
-    int socket_;
+    int socket_fd_;
     struct sockaddr_can socket_addr_;
 
     // interface request var
@@ -39,7 +39,9 @@ private:
     // publisher types for the different can id associations
     std::unordered_map<uint16_t, std::shared_ptr<rclcpp::Publisher<std_msgs::msg::Int32>>> publishers_int32_;
 
+    auto can_timer_ = this->create_wall_timer();    
+
     // function defs
     void load_can_mappings();
-    void can_listener_loop();
+    void can_listener_callback();
 };
