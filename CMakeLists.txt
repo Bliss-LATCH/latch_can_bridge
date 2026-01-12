@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.11)
 project(latch_can_bridge)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -8,10 +8,13 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 
 add_executable(latch_can_bridge src/latch_can_bridge.cpp)
-ament_target_dependencies(latch_can_bridge rclcpp)
+ament_target_dependencies(latch_can_bridge rclcpp std_msgs)
+target_link_libraries(latch_can_bridge yaml-cpp)
 
 install(TARGETS
   latch_can_bridge

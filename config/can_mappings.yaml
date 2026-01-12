@@ -1,0 +1,6 @@
+can_bridge:
+  can_interface: "can0"
+  id_mappings:
+    - can_id: 0x10
+      topic: "/latch/seed"
+      type: "int32"
