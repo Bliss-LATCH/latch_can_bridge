@@ -4,10 +4,11 @@
 #include <yaml-cpp/node/node.h>
 #include <yaml-cpp/parser.h>
 
-#include <ament_index_cpp/get_package_share_directory.hpp>
-#include <rclcpp/logging.hpp>
+#include <rclcpp/qos.hpp>
 
+#include "ament_index_cpp/get_package_share_directory.hpp"
 #include "latch_can_bridge/latch_can_bridge.hpp"
+#include "rclcpp/logging.hpp"
 
 using namespace std::chrono_literals;
 
@@ -54,21 +55,21 @@ void LatchCanBridgeNode::load_can_mappings() {
         std::string msg_type = mapped_id["type"].as<std::string>();
 
         // create a publisher and map it to id
-        if (msg_type == "int32") {
-            publishers_int32_[can_id] = this->create_publisher<std_msgs::msg::Int32>(topic, 10);
-        } else {
-            // TODO implement error handleing and other publisher types
-        }
+        auto new_publisher = this->create_generic_publisher(topic, msg_type, rclcpp::QoS(10));
+        publishers_[can_id] = new_publisher;
     }
 }
 
 void LatchCanBridgeNode::can_listener_callback() {
     struct can_frame frame;
     auto can_bytes = read(socket_fd_, &frame, sizeof(struct can_frame));
-
+    
+    // Test to print data being receievevd  
     if (frame.can_dlc > 0) {
-        RCLCPP_INFO(this->get_logger(), "CAN ID: 0x{:x}, CAN Data: 0x{:x}", frame.can_id, frame.data[0]);
+        RCLCPP_INFO(this->get_logger(), "CAN ID: %#X, CAN Data: %#X", frame.can_id, (uint)can_bytes);
     }
+
+
 }
 
 int main(int argc, char* argv[]) {

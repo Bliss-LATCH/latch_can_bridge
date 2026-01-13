@@ -5,14 +5,18 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 
 add_executable(latch_can_bridge src/latch_can_bridge.cpp)
-ament_target_dependencies(latch_can_bridge rclcpp std_msgs)
+ament_target_dependencies(latch_can_bridge rclcpp std_msgs ament_index_cpp)
 target_link_libraries(latch_can_bridge yaml-cpp)
 
 install(TARGETS

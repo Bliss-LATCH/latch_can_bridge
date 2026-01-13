@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <rclcpp/generic_publisher.hpp>
 #include <rclcpp/node_options.hpp>
 #include <string>
 #include <thread>
@@ -37,7 +38,7 @@ private:
     YAML::Node can_config_;
 
     // publisher types for the different can id associations
-    std::unordered_map<uint16_t, std::shared_ptr<rclcpp::Publisher<std_msgs::msg::Int32>>> publishers_int32_;
+    std::unordered_map<uint16_t, std::shared_ptr<rclcpp::GenericPublisher>> publishers_;
 
     rclcpp::TimerBase::SharedPtr can_timer_;
 

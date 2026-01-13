@@ -3,4 +3,4 @@ can_bridge:
   id_mappings:
     - can_id: 0x10
       topic: "/latch/seed"
-      type: "int32"
+      type: "std_msgs/msg/Int32"
