@@ -11,7 +11,6 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
-
 add_executable(latch_can_bridge src/latch_can_bridge.cpp)
 ament_target_dependencies(latch_can_bridge rclcpp std_msgs)
 target_link_libraries(latch_can_bridge yaml-cpp)
@@ -19,6 +18,10 @@ target_link_libraries(latch_can_bridge yaml-cpp)
 install(TARGETS
   latch_can_bridge
   DESTINATION lib/${PROJECT_NAME})
+
+install(FILES
+        config/can_mappings.yaml
+        DESTINATION share/${PROJECT_NAME}/config/)
 
 target_include_directories(latch_can_bridge PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"

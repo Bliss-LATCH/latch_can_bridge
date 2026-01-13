@@ -39,7 +39,7 @@ private:
     // publisher types for the different can id associations
     std::unordered_map<uint16_t, std::shared_ptr<rclcpp::Publisher<std_msgs::msg::Int32>>> publishers_int32_;
 
-    auto can_timer_ = this->create_wall_timer();    
+    rclcpp::TimerBase::SharedPtr can_timer_;
 
     // function defs
     void load_can_mappings();

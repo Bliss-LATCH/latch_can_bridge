@@ -5,8 +5,11 @@
 #include <yaml-cpp/parser.h>
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
+#include <rclcpp/logging.hpp>
 
 #include "latch_can_bridge/latch_can_bridge.hpp"
+
+using namespace std::chrono_literals;
 
 LatchCanBridgeNode::LatchCanBridgeNode(const rclcpp::NodeOptions& options) : Node("latch_can_bridge", options) {
     // set the socket FD
@@ -33,6 +36,8 @@ LatchCanBridgeNode::LatchCanBridgeNode(const rclcpp::NodeOptions& options) : Nod
     }
 
     load_can_mappings();
+
+    can_timer_ = this->create_wall_timer(100ms, std::bind(&LatchCanBridgeNode::can_listener_callback, this));
 }
 
 void LatchCanBridgeNode::load_can_mappings() {
@@ -57,9 +62,13 @@ void LatchCanBridgeNode::load_can_mappings() {
     }
 }
 
-void LatchCanBridgeNode::can_listener_loop() {
+void LatchCanBridgeNode::can_listener_callback() {
     struct can_frame frame;
     auto can_bytes = read(socket_fd_, &frame, sizeof(struct can_frame));
+
+    if (frame.can_dlc > 0) {
+        RCLCPP_INFO(this->get_logger(), "CAN ID: 0x{:x}, CAN Data: 0x{:x}", frame.can_id, frame.data[0]);
+    }
 }
 
 int main(int argc, char* argv[]) {
