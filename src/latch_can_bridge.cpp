@@ -63,13 +63,11 @@ void LatchCanBridgeNode::load_can_mappings() {
 void LatchCanBridgeNode::can_listener_callback() {
     struct can_frame frame;
     auto can_bytes = read(socket_fd_, &frame, sizeof(struct can_frame));
-    
-    // Test to print data being receievevd  
+
+    // Test to print data being receievevd
     if (frame.can_dlc > 0) {
-        RCLCPP_INFO(this->get_logger(), "CAN ID: %#X, CAN Data: %#X", frame.can_id, (uint)can_bytes);
+        RCLCPP_INFO(this->get_logger(), "CAN ID: %#X, CAN Data: %#X", frame.can_id, frame.data[0]);
     }
-
-
 }
 
 int main(int argc, char* argv[]) {
