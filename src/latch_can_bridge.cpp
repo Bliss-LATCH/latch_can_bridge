@@ -1,31 +1,28 @@
+#include <linux/can.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <yaml-cpp/node/node.h>
-#include <yaml-cpp/parser.h>
 
-#include <rclcpp/qos.hpp>
+#include <cstring>
+#include <thread>
 
 #include "ament_index_cpp/get_package_share_directory.hpp"
 #include "latch_can_bridge/latch_can_bridge.hpp"
-#include "rclcpp/logging.hpp"
+#include "latch_interfaces/msg/can_frame.hpp"
 
 using namespace std::chrono_literals;
 
 LatchCanBridgeNode::LatchCanBridgeNode(const rclcpp::NodeOptions& options) : Node("latch_can_bridge", options) {
+    // setup CAN rx publisher
+    can_rx_pub_ = this->create_publisher<latch_interfaces::msg::CanFrame>("can/rx", 10);
+
     // set the socket FD
     socket_fd_ = socket(PF_CAN, SOCK_RAW, CAN_RAW);
     if (socket_fd_ < 0) {
         // TODO handle errors
     }
 
-    // create the can config yaml node
-    auto pkg_path = ament_index_cpp::get_package_share_directory("latch_can_bridge");
-    auto config_path = pkg_path + "/config/can_mappings.yaml";
-    can_config_ = YAML::LoadFile(config_path);
-
-    // Give the request the name of the desired can interface
-    strcpy(interface_req_.ifr_name, can_config_["can_bridge"]["can_interface"].as<std::string>().c_str());
+    memcpy(&interface_req_.ifr_name, "can0", 4);
     ioctl(socket_fd_, SIOCGIFINDEX, &interface_req_);  // system call to get the interface for can0
 
     // bind the socket address to CAN interface
@@ -36,38 +33,23 @@ LatchCanBridgeNode::LatchCanBridgeNode(const rclcpp::NodeOptions& options) : Nod
         // TODO handle errors
     }
 
-    load_can_mappings();
-
-    can_timer_ = this->create_wall_timer(100ms, std::bind(&LatchCanBridgeNode::can_listener_callback, this));
+    listener_thread_ = std::thread(&LatchCanBridgeNode::can_listener_loop, this);
 }
 
-void LatchCanBridgeNode::load_can_mappings() {
-    // select the mappings element from the can_bridge section of yaml
-    auto can_mappings = can_config_["can_bridge"]["id_mappings"];
-
-    // loop through the mappings
-    for (auto mapped_id : can_mappings) {
-        // get the id
-        uint16_t can_id = mapped_id["can_id"].as<uint16_t>();
-        // get the topic name
-        std::string topic = mapped_id["topic"].as<std::string>();
-        // get the type
-        std::string msg_type = mapped_id["type"].as<std::string>();
-
-        // create a publisher and map it to id
-        auto new_publisher = this->create_generic_publisher(topic, msg_type, rclcpp::QoS(10));
-        publishers_[can_id] = new_publisher;
-    }
-}
-
-void LatchCanBridgeNode::can_listener_callback() {
+void LatchCanBridgeNode::can_listener_loop() {
     struct can_frame frame;
-    auto can_bytes = read(socket_fd_, &frame, sizeof(struct can_frame));
+    auto nbytes = read(socket_fd_, &frame, sizeof(frame));
 
-    // Test to print data being receievevd
-    if (frame.can_dlc > 0) {
-        RCLCPP_INFO(this->get_logger(), "CAN ID: %#X, CAN Data: %#X", frame.can_id, frame.data[0]);
+    if (nbytes < 0) {
+        // TODO handle errors
     }
+
+    latch_interfaces::msg::CanFrame msg;
+    msg.can_id = frame.can_id;
+    msg.data_len = frame.len;
+    memcpy(msg.data.data(), frame.data, frame.len);
+
+    can_rx_pub_->publish(msg);
 }
 
 int main(int argc, char* argv[]) {

@@ -10,4 +10,9 @@ def generate_launch_description():
             executable='latch_can_bridge_node',
             name='latch_can_bridge',
         ),
+        Node(
+            package='front_tred_hw_bridge',
+            executable='front_tred_hw_bridge',
+            name='front_tred_hw_bridge',
+        ),
     ])
