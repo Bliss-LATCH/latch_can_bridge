@@ -7,12 +7,12 @@ def generate_launch_description():
         # Single instance with default namespace
         Node(
             package='latch_can_bridge',
-            executable='latch_can_bridge_node',
+            executable='latch_can_bridge',
             name='latch_can_bridge',
         ),
         Node(
-            package='front_tred_hw_bridge',
-            executable='front_tred_hw_bridge',
-            name='front_tred_hw_bridge',
+            package='latch_can_bridge',
+            executable='hw_bridge_main',
+            name='hw_bridge_main',
         ),
     ])

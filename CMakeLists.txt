@@ -18,17 +18,21 @@ find_package(latch_interfaces REQUIRED)
 add_executable(latch_can_bridge src/latch_can_bridge.cpp)
 ament_target_dependencies(latch_can_bridge rclcpp std_msgs ament_index_cpp latch_interfaces)
 
-add_executable(front_tred_hw_bridge hw_bridges/front_tred_hw_bridge.cpp)
-ament_target_dependencies(front_tred_hw_bridge rclcpp latch_interfaces)
+add_executable(hw_bridge_main hw_bridges/hw_bridge_main.cpp)
+ament_target_dependencies(hw_bridge_main rclcpp latch_interfaces)
 
 install(TARGETS
   latch_can_bridge
-  front_tred_hw_bridge
+  hw_bridge_main
   DESTINATION lib/${PROJECT_NAME})
 
 install(FILES
         config/can_mappings.yaml
         DESTINATION share/${PROJECT_NAME}/config/)
+
+# insatlling for launch files
+install(DIRECTORY launch
+        DESTINATION share/${PROJECT_NAME})
 
 target_include_directories(latch_can_bridge PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"

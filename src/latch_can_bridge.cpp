@@ -4,9 +4,9 @@
 #include <unistd.h>
 
 #include <cstring>
+#include <format>
 #include <thread>
 
-#include "ament_index_cpp/get_package_share_directory.hpp"
 #include "latch_can_bridge/latch_can_bridge.hpp"
 #include "latch_interfaces/msg/can_frame.hpp"
 
@@ -37,19 +37,21 @@ LatchCanBridgeNode::LatchCanBridgeNode(const rclcpp::NodeOptions& options) : Nod
 }
 
 void LatchCanBridgeNode::can_listener_loop() {
-    struct can_frame frame;
-    auto nbytes = read(socket_fd_, &frame, sizeof(frame));
+    while (rclcpp::ok()) {
+        struct can_frame frame;
+        auto nbytes = read(socket_fd_, &frame, sizeof(frame));
 
-    if (nbytes < 0) {
-        // TODO handle errors
+        if (nbytes < 0) {
+            // TODO handle errors
+        }
+
+        latch_interfaces::msg::CanFrame msg;
+        msg.can_id = frame.can_id;
+        msg.data_len = frame.len;
+        memcpy(msg.data.data(), frame.data, frame.len);
+
+        can_rx_pub_->publish(msg);
     }
-
-    latch_interfaces::msg::CanFrame msg;
-    msg.can_id = frame.can_id;
-    msg.data_len = frame.len;
-    memcpy(msg.data.data(), frame.data, frame.len);
-
-    can_rx_pub_->publish(msg);
 }
 
 int main(int argc, char* argv[]) {
