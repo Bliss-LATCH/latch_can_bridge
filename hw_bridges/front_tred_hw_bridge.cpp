@@ -19,6 +19,8 @@ public:
 
         can_rx_sub_ = this->create_subscription<latch_interfaces::msg::CanFrame>(
             "can/rx", 10, std::bind(&FrontTredHWBridge::can_rx_callback, this, _1));
+
+        can_tx_pub_ = this->create_publisher<latch_interfaces::msg::CanFrame>("can/tx", 10);
     }
 
 private:
@@ -27,6 +29,9 @@ private:
 
     // CAN rx subscriber
     rclcpp::Subscription<latch_interfaces::msg::CanFrame>::SharedPtr can_rx_sub_;
+
+    // CAN tx publisher
+    rclcpp::Publisher<latch_interfaces::msg::CanFrame>::SharedPtr can_tx_pub_;
 
     // CAN rx callback
     void can_rx_callback(const latch_interfaces::msg::CanFrame::SharedPtr frame) {
@@ -48,4 +53,13 @@ private:
 
         front_tred_pub_->publish(msg);
     };
+
+    void test_can_tx_loop() {
+        latch_interfaces::msg::CanFrame frame;
+        frame.can_id = 0x120;
+        frame.data_len = 4;
+        frame.data = {0x12, 0x15, 0x16, 0x33};
+
+        can_tx_pub_->publish(frame);
+    }
 };

@@ -38,6 +38,12 @@ private:
     // can rx publisher
     rclcpp::Publisher<latch_interfaces::msg::CanFrame>::SharedPtr can_rx_pub_;
 
-    // function defs
+    // can tx subscriber
+    rclcpp::Subscription<latch_interfaces::msg::CanFrame>::SharedPtr can_tx_sub_;
+
+    // function to run on a thread and read incoming info from the can bus
     void can_listener_loop();
+
+    // callback for writing can message that are published to  the can/tx topic
+    void can_tx_callback(const latch_interfaces::msg::CanFrame::SharedPtr msg);
 };

@@ -11,10 +11,15 @@
 #include "latch_interfaces/msg/can_frame.hpp"
 
 using namespace std::chrono_literals;
+using namespace std::placeholders;
 
 LatchCanBridgeNode::LatchCanBridgeNode(const rclcpp::NodeOptions& options) : Node("latch_can_bridge", options) {
     // setup CAN rx publisher
     can_rx_pub_ = this->create_publisher<latch_interfaces::msg::CanFrame>("can/rx", 10);
+
+    // setup the CAN tx subscriber
+    can_tx_sub_ = this->create_subscription<latch_interfaces::msg::CanFrame>(
+        "can/tx", 10, std::bind(&LatchCanBridgeNode::can_tx_callback, this, _1));
 
     // set the socket FD
     socket_fd_ = socket(PF_CAN, SOCK_RAW, CAN_RAW);
@@ -51,6 +56,19 @@ void LatchCanBridgeNode::can_listener_loop() {
         memcpy(msg.data.data(), frame.data, frame.len);
 
         can_rx_pub_->publish(msg);
+    }
+}
+
+void LatchCanBridgeNode::can_tx_callback(const latch_interfaces::msg::CanFrame::SharedPtr msg) {
+    struct can_frame frame;
+    frame.can_id = msg->can_id;
+    memcpy(frame.data, msg->data.data(), msg->data_len);
+    frame.len = msg->data_len;
+
+    auto nbytes = write(socket_fd_, &frame, frame.len);
+
+    if (nbytes < 0) {
+        // TODO handle errors
     }
 }
 
