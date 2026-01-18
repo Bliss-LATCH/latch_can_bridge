@@ -62,10 +62,10 @@ void LatchCanBridgeNode::can_listener_loop() {
 void LatchCanBridgeNode::can_tx_callback(const latch_interfaces::msg::CanFrame::SharedPtr msg) {
     struct can_frame frame;
     frame.can_id = msg->can_id;
+    frame.can_dlc = msg->data_len;
     memcpy(frame.data, msg->data.data(), msg->data_len);
-    frame.len = msg->data_len;
 
-    auto nbytes = write(socket_fd_, &frame, frame.len);
+    auto nbytes = write(socket_fd_, &frame, sizeof(frame));
 
     if (nbytes < 0) {
         // TODO handle errors

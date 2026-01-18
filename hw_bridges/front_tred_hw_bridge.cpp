@@ -21,6 +21,8 @@ public:
             "can/rx", 10, std::bind(&FrontTredHWBridge::can_rx_callback, this, _1));
 
         can_tx_pub_ = this->create_publisher<latch_interfaces::msg::CanFrame>("can/tx", 10);
+
+        test_can_tx_loop();
     }
 
 private:
@@ -55,11 +57,13 @@ private:
     };
 
     void test_can_tx_loop() {
-        latch_interfaces::msg::CanFrame frame;
-        frame.can_id = 0x120;
-        frame.data_len = 4;
-        frame.data = {0x12, 0x15, 0x16, 0x33};
+        while (rclcpp::ok()) {
+            latch_interfaces::msg::CanFrame frame;
+            frame.can_id = 0x120;
+            frame.data_len = 4;
+            frame.data = {0x12, 0x15, 0x16, 0x33};
 
-        can_tx_pub_->publish(frame);
+            can_tx_pub_->publish(frame);
+        }
     }
 };
