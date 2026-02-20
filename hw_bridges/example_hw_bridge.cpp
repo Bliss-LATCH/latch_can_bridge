@@ -12,13 +12,13 @@
 
 using namespace std::placeholders;
 
-class FrontTredHWBridge : public rclcpp::Node {
+class ExampleHWBridge : public rclcpp::Node {
 public:
-    FrontTredHWBridge() : Node("front_tred_hw_bridge") {
+    ExampleHWBridge() : Node("front_tred_hw_bridge") {
         front_tred_pub_ = this->create_publisher<latch_interfaces::msg::FrontTred>("telemetry/front_tred", 10);
 
         can_rx_sub_ = this->create_subscription<latch_interfaces::msg::CanFrame>(
-            "can/rx", 10, std::bind(&FrontTredHWBridge::can_rx_callback, this, _1));
+            "can/rx", 10, std::bind(&ExampleHWBridge::can_rx_callback, this, _1));
 
         can_tx_pub_ = this->create_publisher<latch_interfaces::msg::CanFrame>("can/tx", 10);
 

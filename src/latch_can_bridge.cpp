@@ -4,7 +4,6 @@
 #include <unistd.h>
 
 #include <cstring>
-#include <format>
 #include <thread>
 
 #include "latch_can_bridge/latch_can_bridge.hpp"

@@ -19,7 +19,7 @@ add_executable(latch_can_bridge src/latch_can_bridge.cpp)
 ament_target_dependencies(latch_can_bridge rclcpp std_msgs ament_index_cpp latch_interfaces)
 
 add_executable(hw_bridge_main hw_bridges/hw_bridge_main.cpp)
-ament_target_dependencies(hw_bridge_main rclcpp latch_interfaces)
+ament_target_dependencies(hw_bridge_main rclcpp std_msgs latch_interfaces)
 
 install(TARGETS
   latch_can_bridge
