@@ -1,5 +1,6 @@
 #include "latch_can_bridge/can_yaml_utils.hpp"
 
+#include <ament_index_cpp/get_package_share_directory.hpp>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -13,7 +14,11 @@ std::unordered_map<std::string, IdMapping> getDeviceIDMap(
         map;
 
     try {
-      YAML::Node config = YAML::LoadFile("config/can_mappings.yaml");
+      std::string package_share_directory =
+          ament_index_cpp::get_package_share_directory("latch_can_bridge");
+      std::string yaml_path =
+          package_share_directory + "/config/can_mappings.yaml";
+      YAML::Node config = YAML::LoadFile(yaml_path);
 
       if (config["can_bridge"] && config["can_bridge"]["devices"]) {
         for (const auto& device : config["can_bridge"]["devices"]) {
