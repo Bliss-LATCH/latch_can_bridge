@@ -1,6 +1,111 @@
 can_bridge:
   can_interface: "can0"
-  id_mappings:
-    - can_id: 0x10
-      topic: "/latch/seed"
-      type: "std_msgs/msg/Int32"
+  devices:
+    - name: "jetson"
+      id_mappings:
+        # Jetson Drive (Front)
+        - msg_name: "drive_front_left_vel"
+          can_id: 0x220
+          topic: "jetson/drive_front/left_vel"
+        - msg_name: "drive_front_right_vel"
+          can_id: 0x221
+          topic: "jetson/drive_front/right_vel"
+        # Jetson Drive (Back)
+        - msg_name: "drive_back_left_vel"
+          can_id: 0x222
+          topic: "jetson/drive_back/left_vel"
+        - msg_name: "drive_back_right_vel"
+          can_id: 0x224
+          topic: "jetson/drive_back/right_vel"
+        # Jetson Elevation
+        - msg_name: "elevation_front"
+          can_id: 0x224
+          topic: "jetson/elevation_front"
+        - msg_name: "elevation_back"
+          can_id: 0x225
+          topic: "jetson/elevation_back"
+        # Jetson Platform
+        - msg_name: "platform_front_hrz_angle"
+          can_id: 0x226
+          topic: "jetson/platform_front/horizontal_angle"
+        - msg_name: "platform_front_vrt_angle"
+          can_id: 0x227
+          topic: "jetson/platform_front/vertical_angle"
+        - msg_name: "platform_back_hrz_angle"
+          can_id: 0x228
+          topic: "jetson/platform_back/horizontal_angle"
+        - msg_name: "platform_back_vrt_angle"
+          can_id: 0x229
+          topic: "jetson/platform_back/vertical_angle"
+
+    - name: "drive_front"
+      id_mappings:
+        - msg_name: "drive_front_left_vel"
+          can_id: 0x480
+          topic: "drive_front/left_vel"
+        - msg_name: "drive_front_right_vel"
+          can_id: 0x481
+          topic: "drive_front/right_vel"
+        - msg_name: "drive_front_ltd"
+          can_id: 0x482
+          topic: "drive_front/ltd"
+        - msg_name: "drive_front_rtd"
+          can_id: 0x483
+          topic: "drive_front/rtd"
+        - msg_name: "drive_front_heading"
+          can_id: 0x484
+          topic: "drive_front/heading"
+
+    - name: "drive_back"
+      id_mappings:
+        - msg_name: "drive_back_left_vel"
+          can_id: 0x4A0
+          topic: "drive_back/left_vel"
+        - msg_name: "drive_back_right_vel"
+          can_id: 0x4A1
+          topic: "drive_back/right_vel"
+        - msg_name: "drive_back_ltd"
+          can_id: 0x4A2
+          topic: "drive_back/ltd"
+        - msg_name: "drive_back_rtd"
+          can_id: 0x4A3
+          topic: "drive_back/rtd"
+        - msg_name: "drive_back_heading"
+          can_id: 0x4A4
+          topic: "drive_back/heading"
+
+    - name: "platform_front"
+      id_mappings:
+        - msg_name: "platform_front_hrz_angle"
+          can_id: 0x4C0
+          topic: "platform_front/horizontal_angle"
+        - msg_name: "platform_front_vrt_angle"
+          can_id: 0x4C1
+          topic: "platform_front/vertical_angle"
+
+    - name: "platform_back"
+      id_mappings:
+        - msg_name: "platform_back_hrz_angle"
+          can_id: 0x4E0
+          topic: "platform_back/horizontal_angle"
+        - msg_name: "platform_back_vrt_angle"
+          can_id: 0x4E1
+          topic: "platform_back/vertical_angle"
+
+    - name: "elevation_front"
+      id_mappings:
+        - msg_name: "elevation_front_height"
+          can_id: 0x500
+          topic: "elevation_front/height"
+        - msg_name: "elevation_front_ls"
+          can_id: 0x501
+          topic: "elevation_front/ls"
+
+    - name: "elevation_back"
+      id_mappings:
+        - msg_name: "elevation_back_height"
+          can_id: 0x520
+          topic: "elevation_back/height"
+        - msg_name: "elevation_back_ls"
+          can_id: 0x521
+          topic: "elevation_back/ls"

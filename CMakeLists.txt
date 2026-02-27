@@ -14,12 +14,19 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(latch_interfaces REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 add_executable(latch_can_bridge src/latch_can_bridge.cpp)
 ament_target_dependencies(latch_can_bridge rclcpp std_msgs ament_index_cpp latch_interfaces)
 
-add_executable(hw_bridge_main hw_bridges/hw_bridge_main.cpp)
+add_executable(hw_bridge_main hw_bridges/hw_bridge_main.cpp src/can_yaml_utils.cpp)
 ament_target_dependencies(hw_bridge_main rclcpp std_msgs latch_interfaces)
+
+target_include_directories(hw_bridge_main PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+
+target_link_libraries(hw_bridge_main yaml-cpp)
 
 install(TARGETS
   latch_can_bridge
