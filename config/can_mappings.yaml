@@ -4,12 +4,12 @@ can_bridge:
     - name: "jetson"
       id_mappings:
         # Jetson Drive (Front)
-        - msg_name: "drive_front_left_vel"
+        - msg_name: "drive_front_lin_vel"
           can_id: 0x220
-          topic: "jetson/drive_front/left_vel"
-        - msg_name: "drive_front_right_vel"
+          topic: "jetson/drive_front/lin_vel"
+        - msg_name: "drive_front_ang_vel"
           can_id: 0x221
-          topic: "jetson/drive_front/right_vel"
+          topic: "jetson/drive_front/ang_vel"
         # Jetson Drive (Back)
         - msg_name: "drive_back_left_vel"
           can_id: 0x222
